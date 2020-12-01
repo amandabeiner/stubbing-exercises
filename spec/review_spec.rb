@@ -35,12 +35,13 @@ RSpec.describe Review do
     end
 
     it "increments the restaurant review count" do
-      restaurant = FactoryBot.create(:restaurant)
+      restaurant = FactoryBot.build_stubbed(:restaurant)
+      allow(restaurant).to receive(:increment_review_count)
       review = Review.new(body: "delicious!", restaurant: restaurant)
 
       review.submit
 
-      expect(restaurant.times_reviewed).to eq(1)
+      expect(restaurant).to have_received(:increment_review_count)
     end
   end
 end

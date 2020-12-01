@@ -5,25 +5,28 @@ require "date"
 RSpec.describe Feed do
   describe "#new_restaurants" do
     it "returns the newest restaurants" do
-      restaurant = FactoryBot.create(:restaurant)
-      _old_restaurant = FactoryBot.create(:restaurant, created_at: Date.current - 10)
-      feed = Feed.new(restaurants: Restaurant.all)
+      restaurants = double("restaurants")
+      allow(Restaurant).to receive(:recently_added).and_return(restaurants)
+      feed = Feed.new(restaurants: restaurants)
 
       results = feed.new_restaurants
 
-      expect(results).to contain_exactly(restaurant)
+      expect(Restaurant).to have_received(:recently_added)
+      expect(results).to eq(restaurants)
     end
   end
 
   describe "#latest_reviews" do
     it "returns the most recent reviews" do
-      review = FactoryBot.create(:review)
-      _old_review = FactoryBot.create(:review, created_at: Date.current - 2)
-      feed = Feed.new(restaurants: Restaurant.all)
+      restaurants = double("restaurants")
+      reviews = [instance_double(Review)]
+      allow(Review).to receive(:newest).and_return(reviews)
+      feed = Feed.new(restaurants: restaurants)
 
       results = feed.latest_reviews
 
-      expect(results).to contain_exactly(review)
+      expect(Review).to have_received(:newest)
+      expect(results).to eq(reviews)
     end
   end
 end
